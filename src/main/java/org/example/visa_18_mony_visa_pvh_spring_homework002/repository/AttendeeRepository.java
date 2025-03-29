@@ -34,6 +34,13 @@ public interface AttendeeRepository {
     Attendee add(@Param("request") AttendeeRequest attendeeRequest);
 
     @Select("""
+        SELECT a.attendee_id,a.attendee_name,a.email FROM event_attendee INNER JOIN attendees a on event_attendee.attendee_id = a.attendee_id
+        WHERE event_id = #{id};
+    """)
+    @ResultMap("attendeesMapper")
+    Attendee getbyEventId(Integer id);
+
+    @Select("""
         UPDATE attendees SET attendee_name=#{request.name}, email=#{request.email} WHERE attendee_id = #{id}
         RETURNING *;
     """)

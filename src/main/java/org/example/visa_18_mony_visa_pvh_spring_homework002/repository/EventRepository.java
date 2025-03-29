@@ -20,8 +20,8 @@ public interface EventRepository {
             @Result(property = "venue", column = "venue_id",
                 one = @One(select = "org.example.visa_18_mony_visa_pvh_spring_homework002.repository.VenueRepository.getVenueById")
             ),
-            @Result(property = "attendees", column = "attendee_id",
-                many = @Many(select = "org.example.visa_18_mony_visa_pvh_spring_homework002.repository.AttendeeRepository.getById")
+            @Result(property = "attendees", column = "event_id",
+                many = @Many(select = "org.example.visa_18_mony_visa_pvh_spring_homework002.repository.AttendeeRepository.getbyEventId")
             )
     })
     List<Event> getAllEvent(Integer limit, Integer offset);
