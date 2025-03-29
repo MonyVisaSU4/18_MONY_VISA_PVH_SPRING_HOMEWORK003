@@ -1,7 +1,9 @@
 package org.example.visa_18_mony_visa_pvh_spring_homework002.controller;
 
+import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.NotFoundException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.request.EventRequest;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ApiRespone;
+import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ErrorRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.entity.Event;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.service.EventService;
 import org.springframework.http.HttpStatus;
@@ -31,12 +33,20 @@ public class EventController {
     }
 
     @GetMapping("/event/{event-id}")
-    public ResponseEntity<ApiRespone<Event>> getbyid(@PathVariable("event-id") Integer id){
+    public ResponseEntity<?> getbyid(@PathVariable("event-id") Integer id){
         ApiRespone<Event> apiRespone = ApiRespone.<Event>builder()
                 .message("All event have been successfully fetched.")
                 .payload(eventService.getById(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        try{
+            if(apiRespone.getPayload() == null){
+                throw new NotFoundException("This id: " + id + " Not Found");
+            }
+        }
+        catch (NotFoundException ex){
+            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+        }
         return ResponseEntity.ok(apiRespone);
     }
 

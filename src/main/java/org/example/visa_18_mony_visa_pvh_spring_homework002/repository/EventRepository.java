@@ -34,19 +34,29 @@ public interface EventRepository {
     Event getbyid(Integer id);
 
     @Select("""
-        
+        INSERT INTO events (event_name, event_date, venue_id) 
+        VALUES (#{request.name}, #{request.date}, #{request.venue})
+        RETURNING event_id;
     """)
     @ResultMap("eventMapper")
     Event addEvent(@Param("request") EventRequest eventRequest);
 
+//    Not Already
     @Select("""
-        
+        DELETE FROM events WHERE event_id = #{id}
+        RETURNING event_id;
     """)
     @ResultMap("eventMapper")
     Event delelteEvent(Integer id);
 
+//    Have Bug
     @Select("""
-        
+        UPDATE events
+        SET event_name = #{request.name}, 
+            event_date = #{request.date}, 
+            venue_id = #{request.venue}
+        WHERE event_id = #{id}
+        RETURNING event_id;
     """)
     @ResultMap("eventMapper")
     Event updateEvent(Integer id, @Param("request") EventRequest eventRequest);

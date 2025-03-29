@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.entity.Attendee;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.entity.Venue;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 public class EventRequest {
     private String name;
-    private String date;
+    private Date date;
     private Integer venue;
-    private List<Integer> attendees;
+    private List<Integer> attendeesId;
 }

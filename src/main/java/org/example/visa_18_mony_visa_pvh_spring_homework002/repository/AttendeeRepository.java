@@ -40,6 +40,24 @@ public interface AttendeeRepository {
     @ResultMap("attendeesMapper")
     Attendee getbyEventId(Integer id);
 
+    @Insert("""
+        INSERT INTO event_attendee(event_id, attendee_id)\s
+        VALUES(#{eventId},#{attendeeId});
+    """)
+    void addEventIdAndAttendee(Integer eventId, Integer attendeeId);
+
+    @Update("""
+        UPDATE event_attendee
+        SET attendee_id = #{attendeeId}
+        WHERE event_id = #{eventId};
+    """)
+    void updateEventIdAndAttendee(Integer eventId, Integer attendeeId);
+
+//    @Delete("""
+//        DELETE FROM event_attendee WHERE event_id = #{eventId};
+//    """)
+//    void deleteEventIdAndAttendee(Integer eventId);
+
     @Select("""
         UPDATE attendees SET attendee_name=#{request.name}, email=#{request.email} WHERE attendee_id = #{id}
         RETURNING *;

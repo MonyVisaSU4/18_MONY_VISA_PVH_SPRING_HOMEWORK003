@@ -1,6 +1,8 @@
 package org.example.visa_18_mony_visa_pvh_spring_homework002.controller;
 
+import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.NotFoundException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.request.VenueRequest;
+import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ErrorRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.entity.Venue;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ApiRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.service.VenueService;
@@ -31,12 +33,20 @@ public class VenueController {
     }
 
     @GetMapping("/venues/{venue-id}")
-    public ResponseEntity<ApiRespone<Venue>> search(@PathVariable("venue-id") Integer id){
+    public ResponseEntity<?> search(@PathVariable("venue-id") Integer id){
         ApiRespone<Venue> apiRespone = ApiRespone.<Venue>builder()
                 .message("All venues have been successfully fetched.")
                 .payload(venueService.getVenueById(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        try{
+            if(apiRespone.getPayload() == null){
+                throw new NotFoundException("This id: " + id + " Not Found");
+            }
+        }
+        catch (NotFoundException ex){
+            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+        }
         return ResponseEntity.ok(apiRespone);
     }
 
