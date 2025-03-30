@@ -44,7 +44,7 @@ public interface EventRepository {
 //    Not Already
     @Select("""
         DELETE FROM events WHERE event_id = #{id}
-        RETURNING event_id;
+        RETURNING *;
     """)
     @ResultMap("eventMapper")
     Event delelteEvent(Integer id);

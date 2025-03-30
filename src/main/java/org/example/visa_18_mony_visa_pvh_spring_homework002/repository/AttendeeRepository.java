@@ -53,10 +53,10 @@ public interface AttendeeRepository {
     """)
     void updateEventIdAndAttendee(Integer eventId, Integer attendeeId);
 
-//    @Delete("""
-//        DELETE FROM event_attendee WHERE event_id = #{eventId};
-//    """)
-//    void deleteEventIdAndAttendee(Integer eventId);
+    @Delete("""
+        DELETE FROM event_attendee WHERE event_id = #{eventId};
+    """)
+    void deleteEventIdAndAttendee(Integer eventId);
 
     @Select("""
         UPDATE attendees SET attendee_name=#{request.name}, email=#{request.email} WHERE attendee_id = #{id}

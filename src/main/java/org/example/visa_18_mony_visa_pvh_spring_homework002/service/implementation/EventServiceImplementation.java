@@ -50,7 +50,7 @@ public class EventServiceImplementation implements EventService {
 
     @Override
     public Event deleteEvent(Integer id) {
-
-        return null;
+        attendeeRepository.deleteEventIdAndAttendee(id);
+        return repository.delelteEvent(id);
     }
 }
