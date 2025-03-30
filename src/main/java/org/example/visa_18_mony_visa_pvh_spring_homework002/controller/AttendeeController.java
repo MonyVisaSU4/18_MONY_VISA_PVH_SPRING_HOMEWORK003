@@ -1,8 +1,8 @@
 package org.example.visa_18_mony_visa_pvh_spring_homework002.controller;
 
+import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.BlankInputException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.NotFoundException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.request.AttendeeRequest;
-import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.request.VenueRequest;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ApiRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ErrorRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.entity.Attendee;
@@ -40,19 +40,26 @@ public class AttendeeController {
                 .payload(attendeeService.getById(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
-        try{
+//        try{
             if(apiRespone.getPayload() == null){
                 throw new NotFoundException("This id: " + id + " Not Found");
             }
-        }
-        catch (NotFoundException ex){
-            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
-        }
+//        }
+//        catch (NotFoundException ex){
+//            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+//        }
         return ResponseEntity.ok(apiRespone);
     }
 
     @PostMapping("/attendees")
     public ResponseEntity<ApiRespone<Attendee>> add(@RequestBody AttendeeRequest attendeeRequest){
+        if(attendeeRequest.getName().isEmpty() && attendeeRequest.getEmail().isEmpty()){
+            throw new BlankInputException("Name & Email Should not be blank");
+        } else if(attendeeRequest.getName().isEmpty()) {
+            throw new BlankInputException("Name Should not blank");
+        } else if(attendeeRequest.getEmail().isEmpty()) {
+            throw new BlankInputException("Email Should not blank");
+        }
         ApiRespone<Attendee> apiRespone = ApiRespone.<Attendee>builder()
                 .message("All attendees have been successfully fetched.")
                 .payload(attendeeService.add(attendeeRequest))
@@ -63,11 +70,21 @@ public class AttendeeController {
 
     @PutMapping("/attendees/{attendees-id}")
     public ResponseEntity<ApiRespone<Attendee>> update(@PathVariable("attendees-id") Integer id, AttendeeRequest attendeeRequest){
+        if(attendeeRequest.getName().isEmpty() && attendeeRequest.getEmail().isEmpty()){
+            throw new BlankInputException("Name & Email Should not be blank");
+        } else if(attendeeRequest.getName().isEmpty()) {
+            throw new BlankInputException("Name Should not blank");
+        } else if(attendeeRequest.getEmail().isEmpty()) {
+            throw new BlankInputException("Email Should not blank");
+        }
         ApiRespone<Attendee> apiRespone = ApiRespone.<Attendee>builder()
                 .message("All attendees have been successfully fetched.")
                 .payload(attendeeService.update(id, attendeeRequest))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        if(apiRespone.getPayload() == null){
+            throw new NotFoundException("This id: " + id + " Not Found");
+        }
         return ResponseEntity.ok(apiRespone);
     }
 
@@ -78,6 +95,14 @@ public class AttendeeController {
                 .payload(attendeeService.delete(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        if(apiRespone.getPayload() == null){
+            throw new NotFoundException("This id: " + id + " Not Found");
+        }
         return ResponseEntity.ok(apiRespone);
     }
+
+//    @ExceptionHandler(NotFoundException.class)
+//    public ResponseEntity<?> handler(NotFoundException ex){
+//        return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+//    }
 }

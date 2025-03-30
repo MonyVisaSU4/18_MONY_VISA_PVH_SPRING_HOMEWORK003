@@ -1,8 +1,8 @@
 package org.example.visa_18_mony_visa_pvh_spring_homework002.controller;
 
+import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.BlankInputException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.NotFoundException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.request.VenueRequest;
-import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ErrorRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.entity.Venue;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ApiRespone;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.service.VenueService;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/v1")
@@ -39,19 +40,26 @@ public class VenueController {
                 .payload(venueService.getVenueById(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
-        try{
+//        try{
             if(apiRespone.getPayload() == null){
                 throw new NotFoundException("This id: " + id + " Not Found");
             }
-        }
-        catch (NotFoundException ex){
-            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
-        }
+//        }
+//        catch (NotFoundException ex){
+//            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+//        }
         return ResponseEntity.ok(apiRespone);
     }
 
     @PostMapping("/venues")
     public ResponseEntity<ApiRespone<Venue>> add(@RequestBody VenueRequest venueRequest){
+        if (Objects.equals(venueRequest.getVenueName(), "") && Objects.equals(venueRequest.getLocation(), "")) {
+            throw new BlankInputException("Name and Location should not be blank");
+        } else if (Objects.equals(venueRequest.getVenueName(), "")) {
+            throw new BlankInputException("Name should not be blank");
+        } else if (Objects.equals(venueRequest.getLocation(), "")) {
+            throw new BlankInputException("Location should not be blank");
+        }
         ApiRespone<Venue> apiRespone = ApiRespone.<Venue>builder()
                 .message("All venues have been successfully fetched.")
                 .payload(venueService.addVenue(venueRequest))
@@ -62,11 +70,21 @@ public class VenueController {
 
     @PutMapping("/venues/{venue-id}")
     public ResponseEntity<ApiRespone<Venue>> update(@PathVariable("venue-id") Integer id, VenueRequest venueRequest){
+        if (Objects.equals(venueRequest.getVenueName(), "") && Objects.equals(venueRequest.getLocation(), "")) {
+            throw new BlankInputException("Name and Location should not be blank");
+        } else if (Objects.equals(venueRequest.getVenueName(), "")) {
+            throw new BlankInputException("Name should not be blank");
+        } else if (Objects.equals(venueRequest.getLocation(), "")) {
+            throw new BlankInputException("Location should not be blank");
+        }
         ApiRespone<Venue> apiRespone = ApiRespone.<Venue>builder()
                 .message("All venues have been successfully fetched.")
                 .payload(venueService.updateVenues(id, venueRequest))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        if(apiRespone.getPayload() == null){
+            throw new NotFoundException("This id: " + id + " Not Found");
+        }
         return ResponseEntity.ok(apiRespone);
     }
 
@@ -77,6 +95,14 @@ public class VenueController {
                 .payload(venueService.deleteVenues(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        if(apiRespone.getPayload() == null){
+            throw new NotFoundException("This id: " + id + " Not Found");
+        }
         return ResponseEntity.ok(apiRespone);
     }
+
+//    @ExceptionHandler(NotFoundException.class)
+//    public ResponseEntity<?> handler(NotFoundException ex){
+//        return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+//    }
 }

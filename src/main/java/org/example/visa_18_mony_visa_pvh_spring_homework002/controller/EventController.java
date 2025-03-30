@@ -1,5 +1,6 @@
 package org.example.visa_18_mony_visa_pvh_spring_homework002.controller;
 
+import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.BlankInputException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.exception.NotFoundException;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.request.EventRequest;
 import org.example.visa_18_mony_visa_pvh_spring_homework002.models.dto.respone.ApiRespone;
@@ -39,19 +40,30 @@ public class EventController {
                 .payload(eventService.getById(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
-        try{
+//        try{
             if(apiRespone.getPayload() == null){
                 throw new NotFoundException("This id: " + id + " Not Found");
             }
-        }
-        catch (NotFoundException ex){
-            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
-        }
+//        }
+//        catch (NotFoundException ex){
+//            return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+//        }
         return ResponseEntity.ok(apiRespone);
     }
 
     @PostMapping("/event")
     public ResponseEntity<ApiRespone<Event>> add(@RequestBody EventRequest eventRequest){
+        if(eventRequest.getName().isEmpty() && eventRequest.getDate() == null && eventRequest.getVenue() == null && eventRequest.getAttendeesId() == null){
+            throw new BlankInputException("Name & Date & Venue & Attendees Should not be blank");
+        } else if(eventRequest.getName().isEmpty()) {
+            throw new BlankInputException("Event name cannot be empty");
+        } else if(eventRequest.getDate() == null) {
+            throw new BlankInputException("Event date must be specified");
+        } else if(eventRequest.getVenue() == null) {
+            throw new BlankInputException("Event venue cannot be null");
+        } else if(eventRequest.getAttendeesId() == null) {
+            throw new BlankInputException("Attendees list cannot be null");
+        }
         ApiRespone<Event> apiRespone = ApiRespone.<Event>builder()
                 .message("All event have been successfully fetched.")
                 .payload(eventService.addEvent(eventRequest))
@@ -62,11 +74,25 @@ public class EventController {
 
     @PutMapping("/event/{event-id}")
     public ResponseEntity<ApiRespone<Event>> update(@PathVariable("event-id") Integer id ,@RequestBody EventRequest eventRequest){
+        if(eventRequest.getName().isEmpty() && eventRequest.getDate() == null && eventRequest.getVenue() == null && eventRequest.getAttendeesId() == null){
+            throw new BlankInputException("Name & Date & Venue & Attendees Should not be blank");
+        } else if(eventRequest.getName().isEmpty()) {
+            throw new BlankInputException("Event name cannot be empty");
+        } else if(eventRequest.getDate() == null) {
+            throw new BlankInputException("Event date must be specified");
+        } else if(eventRequest.getVenue() == null) {
+            throw new BlankInputException("Event venue cannot be null");
+        } else if(eventRequest.getAttendeesId() == null) {
+            throw new BlankInputException("Attendees list cannot be null");
+        }
         ApiRespone<Event> apiRespone = ApiRespone.<Event>builder()
                 .message("All event have been successfully fetched.")
                 .payload(eventService.updateEvent(id, eventRequest))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        if(apiRespone.getPayload() == null){
+            throw new NotFoundException("This id: " + id + " Not Found");
+        }
         return ResponseEntity.ok(apiRespone);
     }
 
@@ -77,6 +103,14 @@ public class EventController {
                 .payload(eventService.deleteEvent(id))
                 .status(HttpStatus.OK)
                 .time(LocalDateTime.now()).build();
+        if(apiRespone.getPayload() == null){
+            throw new NotFoundException("This id: " + id + " Not Found");
+        }
         return ResponseEntity.ok(apiRespone);
     }
+
+//    @ExceptionHandler(NotFoundException.class)
+//    public ResponseEntity<?> handler(NotFoundException ex){
+//        return new ResponseEntity<>(new ErrorRespone(ex.getMessage(), HttpStatus.NOT_FOUND), HttpStatus.NOT_FOUND);
+//    }
 }
